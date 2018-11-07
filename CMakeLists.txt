@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 2.8.7)
+cmake_minimum_required(VERSION 3.0)
 
 if(POLICY CMP0048)
     # cmake warns if loaded from a min-3.0-required parent dir, so silence the warning:
@@ -11,6 +11,8 @@ set_property(GLOBAL PROPERTY USE_FOLDERS ON)
 set_property(GLOBAL PROPERTY PREDEFINED_TARGETS_FOLDER "CMake")
 
 project(cpr CXX)
+
+find_package(curl REQUIRED)
 
 if(NOT ${CMAKE_VERSION} LESS 3.2)
     set(CMAKE_CXX_STANDARD 11)
@@ -61,12 +63,12 @@ endmacro()
 message(STATUS "C++ Requests CMake Options")
 message(STATUS "=======================================================")
 cpr_option(USE_SYSTEM_CURL
-    "If ON, this project will look in the system paths for an installed curl library" OFF)
+    "If ON, this project will look in the system paths for an installed curl library" ON)
 cpr_option(BUILD_CPR_TESTS "Set to ON to build cpr tests." ON)
 cpr_option(GENERATE_COVERAGE "Set to ON to generate coverage reports." OFF)
 cpr_option(CPR_CURL_NOSIGNAL "Set to ON to disable use of signals in libcurl." OFF)
 cpr_option(USE_SYSTEM_GTEST
-    "If ON, this project will look in the system paths for an installed gtest library" OFF)
+    "If ON, this project will look in the system paths for an installed gtest library" ON)
 cpr_option(CMAKE_USE_OPENSSL "Use OpenSSL code. Experimental" ON)
 message(STATUS "=======================================================")
 
@@ -74,7 +76,6 @@ if(BUILD_CPR_TESTS)
     enable_testing()
 endif()
 
-add_subdirectory(opt)
 add_subdirectory(cpr)
 if(BUILD_CPR_TESTS)
     add_subdirectory(test)

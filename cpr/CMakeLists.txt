@@ -40,16 +40,27 @@ add_library(${CPR_LIBRARIES}
     "${CPR_INCLUDE_DIRS}/cpr/ssl_options.h")
 
 message(STATUS "Using CURL_LIBRARIES: ${CURL_LIBRARIES}.")
-target_link_libraries(${CPR_LIBRARIES}
-    ${CURL_LIBRARIES})
+target_link_libraries(${CPR_LIBRARIES} PUBLIC CURL::libcurl)
 
-if(NOT (CMAKE_VERSION VERSION_LESS 3.0))
-    target_include_directories(${CPR_LIBRARIES}
-        PUBLIC
-        ${CPR_INCLUDE_DIRS}
-        ${CURL_INCLUDE_DIRS})
-else()
-    include_directories(
-        ${CPR_INCLUDE_DIRS}
-        ${CURL_INCLUDE_DIRS})
-endif()
+target_include_directories(${CPR_LIBRARIES}
+    PUBLIC
+    $<BUILD_INTERFACE:${CPR_INCLUDE_DIRS}>)
+
+install(
+        TARGETS ${CPR_LIBRARIES}
+        EXPORT ${CPR_LIBRARIES}-cmake
+        ARCHIVE DESTINATION lib/
+        LIBRARY DESTINATION lib/
+        RUNTIME DESTINATION bin/
+        INCLUDES DESTINATION include/${CPR_LIBRARIES})
+
+install(
+        DIRECTORY "${PROJECT_SOURCE_DIR}/include/"
+        DESTINATION include/${CPR_LIBRARIES}
+        FILES_MATCHING PATTERN "*.*h")
+
+install(
+        EXPORT ${CPR_LIBRARIES}-cmake
+        FILE ${CPR_LIBRARIES}-config.cmake
+        NAMESPACE ${CPR_LIBRARIES}::
+        DESTINATION share/${CPR_LIBRARIES}/cmake)
